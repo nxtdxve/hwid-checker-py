@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container py-4">
+        <h1>Keys</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Days</th>
+                    <th>Used</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key in keys %}
+                <tr>
+                    <td>{{ key.key }}</td>
+                    <td>{{ key.days }}</td>
+                    <td>{{ key.used }}</td>
+                    <td>
+                        <form action="/delete_key" method="POST">
+                            <input type="hidden" name="key" value="{{ key.key }}">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h1>Users</h1>
+        <table class="table">
+            <!-- Table header and body code for user list -->
+            <thead>
+                <tr>
+                    <th>HWID</th>
+                    <th>Username</th>
+                    <th>IP Address</th>
+                    <th>Country</th>
+                    <th>Last Login</th>
+                    <th>Disabled</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.hwid }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.ip_address }}</td>
+                    <td>{{ user.country }}</td>
+                    <td>{{ user.last_login }}</td>
+                    <td>{{ user.disabled }}</td>
+                    <td>
+                        {% if user.disabled %}
+                        <form action="/enable_user" method="POST">
+                            <input type="hidden" name="hwid" value="{{ user.hwid }}">
+                            <button type="submit" class="btn btn-success">Enable</button>
+                        </form>
+                        {% else %}
+                        <form action="/disable_user" method="POST"
+                            onsubmit="return confirm('Are you sure you want to disable this user?');">
+                            <input type="hidden" name="hwid" value="{{ user.hwid }}">
+                            <button type="submit" class="btn btn-warning">Disable</button>
+                        </form>
+                        </form>
+                        <form id="delete-form-{{ user.hwid }}" style="display: none;" action="/delete_user"
+                            method="POST">
+                            <input type="hidden" name="hwid" value="{{ user.hwid }}">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+
+                        <button type="button" class="btn btn-danger"
+                            onclick="showConfirmation('{{ user.username }}', '{{ user.hwid }}')">Delete</button>
+
+                        <script>
+                            function showConfirmation(username, hwid) {
+                                var confirmUsername = prompt("Please enter the username to confirm deletion:");
+                                if (confirmUsername == username) {
+                                    var form = $('#delete-form-' + hwid);
+                                    console.log('Data sent to server:', form.serialize() + '&confirm_username=' + confirmUsername);
+                                    console.log('hwid:', hwid);
+                                    $.ajax({
+                                        url: form.attr('action'),
+                                        type: 'POST',
+                                        data: form.serialize() + '&confirm_username=' + confirmUsername,
+                                        success: function (response) {
+                                            if (response.success) {
+                                                // User deleted successfully
+                                                alert(response.message);
+                                                window.location.href = '/admin_panel';
+                                            } else {
+                                                // Incorrect confirmation username
+                                                alert(response.message);
+                                            }
+                                        },
+                                        error: function (response) {
+                                            // Error occurred
+                                            alert('An error occurred. User was not deleted.');
+                                        }
+                                    });
+                                } else {
+                                    alert('Incorrect confirmation username. User was not deleted.');
+                                }
+                            }
+                        </script>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
