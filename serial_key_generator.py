@@ -9,8 +9,9 @@ dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
 dns.resolver.default_resolver.nameservers = ['8.8.8.8']
 
 load_dotenv()
-uri = os.environ.get("DB_URI")
-client = pymongo.MongoClient(uri)
+DB_URI = os.environ.get("DB_URI")
+DB_NAME = os.environ.get("DB_NAME")
+client = pymongo.MongoClient(DB_URI)
 
 # Define the number of keys to generate
 num_keys = 10
@@ -37,7 +38,7 @@ for i in range(num_keys):
     keys.append(key)
 
 # Insert the keys into the database
-keys_collection = client['ev0lvedsystemsDB']['keys']
+keys_collection = client[DB_NAME]['keys']
 for key in keys:
     print(key)
     keys_collection.insert_one({"key": key, "used": False, "activation_days": key_activation_days})

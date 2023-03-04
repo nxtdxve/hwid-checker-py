@@ -11,15 +11,16 @@ dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
 dns.resolver.default_resolver.nameservers = ['8.8.8.8']
 
 load_dotenv()
-uri = os.environ.get("DB_URI")
-client = pymongo.MongoClient(uri)
+DB_URI = os.environ.get("DB_URI")
+DB_NAME = os.environ.get("DB_NAME")
+client = pymongo.MongoClient(DB_URI)
 
 # Obtain the user's HWID using the WMI API
 wmi_obj = wmi.WMI()
 hwid = wmi_obj.Win32_ComputerSystemProduct()[0].UUID
 
 # Check if the HWID is in the database
-db = client['ev0lvedsystemsDB']
+db = client[DB_NAME]
 users_collection = db['users']
 user = users_collection.find_one({"hwid": hwid})
 if user is not None:

@@ -7,14 +7,15 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-uri = os.environ.get("DB_URI")
-client = pymongo.MongoClient(uri)
+DB_URI = os.environ.get("DB_URI")
+DB_NAME = os.environ.get("DB_NAME")
+client = pymongo.MongoClient(DB_URI)
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    db = client['ev0lvedsystemsDB']
+    db = client[DB_NAME]
     keys_collection = db['keys']
     keys = list(keys_collection.find())
 
@@ -25,7 +26,7 @@ def home():
 
 @app.route('/generate_keys', methods=['GET', 'POST'])
 def generate_keys():
-    db = client['ev0lvedsystemsDB']
+    db = client[DB_NAME]
     if request.method == 'POST':
         num_keys = int(request.form['num_keys'])
         days_valid = int(request.form['days_valid'])
@@ -61,7 +62,7 @@ def generate_key():
 
 @app.route('/delete_key', methods=['POST'])
 def delete_key():
-    db = client['ev0lvedsystemsDB']
+    db = client[DB_NAME]
     keys_collection = db['keys']
 
     key = request.form['key']
@@ -71,7 +72,7 @@ def delete_key():
 
 @app.route('/disable_user', methods=['POST'])
 def disable_user():
-    db = client['ev0lvedsystemsDB']
+    db = client[DB_NAME]
     users_collection = db['users']
 
     hwid = request.form['hwid']
@@ -81,7 +82,7 @@ def disable_user():
 
 @app.route('/enable_user', methods=['POST'])
 def enable_user():
-    db = client['ev0lvedsystemsDB']
+    db = client[DB_NAME]
     users_collection = db['users']
 
     hwid = request.form['hwid']
@@ -93,7 +94,7 @@ def enable_user():
 
 @app.route('/delete_user', methods=['POST'])
 def delete_user():
-    db = client['ev0lvedsystemsDB']
+    db = client[DB_NAME]
     users_collection = db['users']
 
     hwid = request.form['hwid']
