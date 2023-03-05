@@ -60,6 +60,26 @@ def generate_key():
 
     return key
 
+
+
+@app.route('/keys')
+def keys():
+    db = client[DB_NAME]
+    keys_collection = db['keys']
+    keys = list(keys_collection.find())
+
+    return render_template('keys.html', keys=keys)
+
+@app.route('/users')
+def users():
+    db = client[DB_NAME]
+    users_collection = db['users']
+    users = list(users_collection.find())
+
+    return render_template('users.html', users=users)
+
+
+
 @app.route('/delete_key', methods=['POST'])
 def delete_key():
     db = client[DB_NAME]
