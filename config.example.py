@@ -1,2 +1,5 @@
 DB_URI='mongodb+srv://username:password@cluster-name.mongodb.net/database-name'
 DB_NAME='database-name'
+REPO_OWNER='username'
+REPO_NAME='repo-name'
+VERSION='v1.0.0'

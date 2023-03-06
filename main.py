@@ -4,10 +4,46 @@ import dns.resolver
 import requests
 from datetime import datetime, timedelta
 import os
+import subprocess
+import tempfile
+import sys
 import config
 
 dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
 dns.resolver.default_resolver.nameservers = ['8.8.8.8']
+
+# Check for the latest version on GitHub
+url = f"https://api.github.com/repos/{config.REPO_OWNER}/{config.REPO_NAME}/releases/latest"
+response = requests.get(url, headers={"Accept": "application/vnd.github.v3+json"})
+if response.status_code == 200:
+    release_info = response.json()
+    latest_version = release_info["tag_name"]
+
+    # Compare the latest version with the current version
+    if latest_version != config.VERSION:
+        print("A new version is available: ", latest_version)
+
+        download_url = release_info["assets"][0]["browser_download_url"]
+        download_path = os.path.join(tempfile.gettempdir(), f"{config.REPO_NAME}.exe")
+        print(f"Downloading the new version of {config.REPO_NAME}...")
+        subprocess.call(["powershell", "-Command", f"(New-Object System.Net.WebClient).DownloadFile('{download_url}', '{download_path}')"])
+
+        # Replace the current script with the downloaded script if running as an executable
+        if getattr(sys, 'frozen', False):
+            current_script_path = sys.executable
+            os.remove(current_script_path)
+            os.rename(download_path, current_script_path)
+            # Restart the script with the new version
+            print("Update successful. Restarting the script with the new version...")
+            os.execv(sys.executable, [sys.executable] + sys.argv)
+        else:
+            print("Cannot replace the current script when running as a Python script.")
+            print("Please manually update the script to the latest version by pulling the newest version from github.")
+else:
+    print("Failed to get the latest release information.")
+
+
+
 
 DB_URI = config.DB_URI
 DB_NAME = config.DB_NAME

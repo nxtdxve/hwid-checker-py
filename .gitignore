@@ -3,3 +3,6 @@ config.py
 dist
 build
 main.spec
+_pycache_
+__pycache__
+```
