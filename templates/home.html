@@ -35,9 +35,42 @@
     
 
     <div class="container py-4">
-        <h1>Home</h1>
+        <h1>Dashboard</h1>
         <p>Welcome to the admin panel.</p>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Total Users</h5>
+              <p class="card-text">{{ users|length }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Total Keys</h5>
+              <p class="card-text">{{ keys|length }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Last Login</h5>
+                {% if users %}
+                  {% set latest_user = users|sort(attribute='last_login.$date', reverse=true)|first %}
+                  <p class="card-text">{{ latest_user.username }} ({{ latest_user.last_login|format_datetime }})</p>
+                {% else %}
+                  <p class="card-text">No users found</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>    
+      </div>
+      
+      
 </body>
 
 </html>

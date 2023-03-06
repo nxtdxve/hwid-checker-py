@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body class="bg-light">
@@ -32,18 +33,20 @@
             </ul>
         </div>
     </nav>
-    
+
     <div class="container py-4">
         <h1>Users</h1>
         <table class="table">
             <!-- Table header and body code for user list -->
             <thead>
                 <tr>
-                    <th>HWID</th>
                     <th>Username</th>
+                    <th>HWID</th>
                     <th>IP Address</th>
                     <th>Country</th>
+                    <th>Registered</th>
                     <th>Last Login</th>
+                    <th>Expiration</th>
                     <th>Disabled</th>
                     <th>Actions</th>
                 </tr>
@@ -51,11 +54,25 @@
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.hwid }}</td>
                     <td>{{ user.username }}</td>
+                    <td>{{ user.hwid }}</td>
                     <td>{{ user.ip_address }}</td>
                     <td>{{ user.country }}</td>
-                    <td>{{ user.last_login }}</td>
+                    {% if user.registration_date['$date'] is defined %}
+                    <td>{{ user.registration_date['$date']|format_datetime }}</td>
+                    {% else %}
+                    <td>{{ user.registration_date|format_datetime }}</td>
+                    {% endif %}
+                    {% if user.last_login['$date'] is defined %}
+                    <td>{{ user.last_login['$date']|format_datetime }}</td>
+                    {% else %}
+                    <td>{{ user.last_login|format_datetime }}</td>
+                    {% endif %}
+                    {% if user.expiration_date['$date'] is defined %}
+                    <td>{{ user.expiration_date['$date']|format_datetime }}</td>
+                    {% else %}
+                    <td>{{ user.expiration_date|format_datetime }}</td>
+                    {% endif %}
                     <td>{{ user.disabled }}</td>
                     <td>
                         {% if user.disabled %}
@@ -69,7 +86,8 @@
                             <input type="hidden" name="hwid" value="{{ user.hwid }}">
                             <button type="submit" class="btn btn-warning">Disable</button>
                         </form>
-                        </form>
+                        <button type="button" class="btn btn-primary edit-btn" data-hwid="{{ user.hwid }}"
+                            data-bs-toggle="modal" data-bs-target="#editUserModal{{ user.hwid }}">Edit</button>
                         <form id="delete-form-{{ user.hwid }}" style="display: none;" action="/delete_user"
                             method="POST">
                             <input type="hidden" name="hwid" value="{{ user.hwid }}">
@@ -78,6 +96,35 @@
 
                         <button type="button" class="btn btn-danger"
                             onclick="showConfirmation('{{ user.username }}', '{{ user.hwid }}')">Delete</button>
+
+                        <div class="modal fade" id="editUserModal{{ user.hwid }}" tabindex="-1"
+                            aria-labelledby="editUserModal{{ user.hwid }}Label" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form class="edit-user-form" data-hwid="{{ user.hwid }}">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editUserModal{{ user.hwid }}Label">Edit User
+                                            </h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                              </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="newUsernameInput">New Username</label>
+                                                <input type="text" class="form-control" id="newUsernameInput"
+                                                    name="new_username" placeholder="Enter new username">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
                         <script>
                             function showConfirmation(username, hwid) {
@@ -109,6 +156,56 @@
                                     alert('Incorrect confirmation username. User was not deleted.');
                                 }
                             }
+
+                            $(document).ready(function () {
+                                $('.edit-user-form').submit(function (e) {
+                                    e.preventDefault();
+                                    var hwid = $(this).data('hwid');
+                                    var newUsername = $(this).find('input[name="new_username"]').val();
+                                    $.ajax({
+                                        url: '/edit_user',
+                                        type: 'POST',
+                                        data: {
+                                            hwid: hwid,
+                                            new_username: newUsername
+                                        },
+                                        success: function (response) {
+                                            alert(response.message);
+                                            window.location.reload();
+                                        },
+                                        error: function (response) {
+                                            alert('An error occurred. User was not edited.');
+                                        }
+                                    });
+                                });
+
+                                $('.edit-btn').on('click', function () {
+                                    var hwid = $(this).data('hwid');
+                                    $('#editUserModal' + hwid).modal('show');
+                                });
+
+                                $('#editUserModal').find('form').submit(function (e) {
+                                    e.preventDefault();
+                                    var hwid = $(this).find('input[name="hwid"]').val();
+                                    var newUsername = $(this).find('input[name="new_username"]').val();
+                                    $.ajax({
+                                        url: '/edit_user',
+                                        type: 'POST',
+                                        data: {
+                                            hwid: hwid,
+                                            new_username: newUsername
+                                        },
+                                        success: function (response) {
+                                            alert(response.message);
+                                            window.location.reload();
+                                        },
+                                        error: function (response) {
+                                            alert('An error occurred. User was not edited.');
+                                        }
+                                    });
+                                    $('#editUserModal').modal('hide');
+                                });
+                            });
                         </script>
                         {% endif %}
                     </td>
