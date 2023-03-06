@@ -1,18 +1,16 @@
-from dotenv import load_dotenv
 import wmi
 import pymongo
 import dns.resolver
 import requests
 from datetime import datetime, timedelta
 import os
-from dotenv import load_dotenv
+import config
 
 dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
 dns.resolver.default_resolver.nameservers = ['8.8.8.8']
 
-load_dotenv()
-DB_URI = os.environ.get("DB_URI")
-DB_NAME = os.environ.get("DB_NAME")
+DB_URI = config.DB_URI
+DB_NAME = config.DB_NAME
 client = pymongo.MongoClient(DB_URI)
 
 # Obtain the user's HWID using the WMI API
