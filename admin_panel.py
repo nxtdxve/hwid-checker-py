@@ -5,6 +5,10 @@ import string
 import random
 import os
 from dotenv import load_dotenv
+import dns.resolver
+
+dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
+dns.resolver.default_resolver.nameservers = ['8.8.8.8']
 
 load_dotenv()
 DB_URI = os.environ.get("DB_URI")
