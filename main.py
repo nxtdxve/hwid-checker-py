@@ -61,7 +61,7 @@ if user is not None:
     # Update last_login field
     users_collection.update_one(
         {"hwid": hwid},
-        {"$set": {"last_login": datetime.now()}}
+        {"$set": {"last_login": datetime.now(), "ip_address": requests.get('https://api.ipify.org').text, "country": requests.get('https://ipapi.co/country').text}}
     )
 
     # Check if the user is disabled
@@ -82,6 +82,8 @@ if user is not None:
             print(f"Country: {user['country']}")
             print(f"IP Address: {user['ip_address']}")
             print(f"Last Login: {user['last_login']}")
+            input("Press any key to continue...")
+
 else:
     # Prompt the user to enter a serial key
     key = input("Please enter a serial key: ")
