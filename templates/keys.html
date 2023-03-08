@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Admin Panel - Keys</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">admin panel</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -25,9 +27,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('users') }}">Users</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('generate_keys') }}">Generate Keys</a>
-                </li>
             </ul>
         </div>
     </nav>
@@ -35,6 +34,10 @@
     <!-- Page content -->
     <div class="container py-4">
         <h1>Keys</h1>
+        <div class="text-right mb-2">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#generateKeysModal">Generate
+                Keys</button>
+        </div>
         <table class="table">
             <thead>
                 <tr>
@@ -62,11 +65,38 @@
         </table>
     </div>
 
-    <!-- Bootstrap JavaScript dependencies -->
-    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@2.9.3/dist/umd/popper.min.js"
-            integrity="sha384-gUrCNP0DgKsuRvCk6UwHCQNgJMy6q3/6AaUC6UH9XUubCHm+8jIuzcMNPYeVTpzN"
-            crossorigin="anonymous"></script>
+    <!-- Generate Keys Modal -->
+    <div class="modal fade" id="generateKeysModal" tabindex="-1" role="dialog" aria-labelledby="generateKeysModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="generateKeysModalLabel">Generate Keys</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/generate_keys" method="POST">
+                        <div class="form-group">
+                            <label for="num_keys">Number of Keys:</label>
+                            <input type="number" class="form-control" id="num_keys" name="num_keys" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="days_valid">Days Valid:</label>
+                            <input type="number" class="form-control" id="days_valid" name="days_valid" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Generate Keys</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
 </body>
+
 </html>
