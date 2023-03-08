@@ -2,75 +2,91 @@
 <html>
 
 <head>
-    <title>Admin Panel</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Admin Panel</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">admin panel</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('keys') }}">Keys</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('users') }}">Users</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('generate_keys') }}">Generate Keys</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    
-
-    <div class="container py-4">
-        <h1>Dashboard</h1>
-        <p>Welcome to the admin panel.</p>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">admin panel</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('keys') }}">Keys</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('users') }}">Users</a>
+        </li>
+      </ul>
     </div>
-    <div class="row">
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Total Users</h5>
-              <p class="card-text">{{ users|length }}</p>
-            </div>
-          </div>
+  </nav>
+
+
+  <div class="container py-4">
+    <h1>Dashboard</h1>
+    <p>Welcome to the admin panel.</p>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Total Users</h5>
+          <p class="card-text">{{ users|length }}</p>
         </div>
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Total Keys</h5>
-              <p class="card-text">{{ keys|length }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Last Login</h5>
-                {% if users %}
-                  {% set latest_user = users|sort(attribute='last_login.$date', reverse=true)|first %}
-                  <p class="card-text">{{ latest_user.username }} ({{ latest_user.last_login|format_datetime }})</p>
-                {% else %}
-                  <p class="card-text">No users found</p>
-                {% endif %}
-              </div>
-            </div>
-          </div>    
       </div>
-      
-      
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Total Keys</h5>
+          <p class="card-text">{{ keys|length }}</p>
+        </div>
+      </div>
+    </div>
+    <!-- Last Login Card -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Last Login</h5>
+          <p class="card-text" id="latest-login">Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery and JavaScript code to update the latest login time -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Send an AJAX request to get the latest user's information
+      $.ajax({
+        url: "{{ url_for('latest_login') }}",
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+          // Update the latest login time
+          var latestLogin = data.last_login;
+          var formattedLatestLogin = new Date(latestLogin).toLocaleString('en-US', { timeZone: 'UTC' });
+          $('#latest-login').text(data.username + " (" + formattedLatestLogin + ")");
+        },
+        error: function (xhr, status, error) {
+          console.log("Error getting latest user: " + error);
+        }
+      });
+    });
+  </script>
+
+
+
 </body>
 
 </html>
