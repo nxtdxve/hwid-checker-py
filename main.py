@@ -86,13 +86,31 @@ def check_user_authentication() -> None:
 
         if user["disabled"]:
             print("Your account is currently disabled.")
-        else:
             if datetime.now() > user["expiration_date"]:
-                users_collection.update_one(
-                    {"hwid": hwid},
-                    {"$set": {"disabled": True}}
-                )
-                print("Your account has expired.")
+                while True:
+                    key = input("Please enter a new serial key or press enter to exit: ")
+                    if key == "":
+                        sys.exit()
+                    key_doc = db['keys'].find_one({"key": key})
+                    if key_doc is not None and not key_doc["used"]:
+                        days_valid = key_doc["days"]
+                        registration_date = datetime.now()
+                        expiration_date = registration_date + timedelta(days=days_valid)
+                        users_collection.update_one(
+                            {"hwid": hwid},
+                            {"$set": {"disabled": False, 
+                                      "expiration_date": expiration_date, 
+                                      "key": key, 
+                                      "last_login": datetime.now()}}
+                        )
+                        db['keys'].update_one(
+                            {"key": key},
+                            {"$set": {"used": True}}
+                        )
+                        print("Your account has been reactivated.")
+                        break
+                    else:
+                        print("Invalid serial key.")
             else:
                 print(f"Welcome back, {user['username']}!")
                 print(f"Country: {user['country']}")
