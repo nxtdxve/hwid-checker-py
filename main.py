@@ -111,6 +111,13 @@ def check_user_authentication() -> None:
                         break
                     else:
                         print("Invalid serial key.")
+        else:
+            if datetime.now() > user["expiration_date"]:
+                users_collection.update_one(
+                    {"hwid": hwid},
+                    {"$set": {"disabled": True}}
+                )
+                print("Your account has expired.")
             else:
                 print(f"Welcome back, {user['username']}!")
                 print(f"Country: {user['country']}")
