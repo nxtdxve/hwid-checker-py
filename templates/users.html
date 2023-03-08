@@ -27,9 +27,6 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="{{ url_for('users') }}">Users</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('generate_keys') }}">Generate Keys</a>
-                </li>
             </ul>
         </div>
     </nav>
@@ -54,7 +51,7 @@
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.username }}</td>
+                    <td><a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a></td>
                     <td>{{ user.hwid }}</td>
                     <td>{{ user.ip_address }}</td>
                     <td>{{ user.country }}</td>
