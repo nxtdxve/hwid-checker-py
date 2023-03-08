@@ -118,12 +118,15 @@ def check_user_authentication() -> None:
                     {"$set": {"disabled": True}}
                 )
                 print("Your account has expired.")
+
             else:
+                days_left = (user['expiration_date'] - datetime.now()).days
+                expiration_date = user['expiration_date'].strftime('%b %d, %Y')
                 print(f"Welcome back, {user['username']}!")
-                print(f"Country: {user['country']}")
-                print(f"IP Address: {user['ip_address']}")
-                print(f"Last Login: {user['last_login']}")
+                print(f"Your account expires in {days_left} days ({expiration_date}).")
+                print("Thank you for using our software.")
                 input("Press any key to continue...")
+
 
     else:
         key = input("Please enter a serial key: ")
