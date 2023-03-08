@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User Information</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>User Information</h1>
+      <p>Username: {{ user.username }}</p>
+      <p>HWID: {{ user.hwid }}</p>
+      <p>Registration Date: {{ user.registration_date|format_datetime }}</p>
+      <p>Last Login: {{ user.last_login|format_datetime }}</p>
+      {% if user.disabled %}
+        <p>Status: Disabled</p>
+      {% else %}
+        <p>Status: Enabled</p>
+      {% endif %}
+      <form method="POST" action="{{ url_for('edit_user') }}">
+        <input type="hidden" name="hwid" value="{{ user.hwid }}">
+        <div class="form-group">
+          <label for="new_username">New Username:</label>
+          <input type="text" class="form-control" id="new_username" name="new_username" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+      <br>
+      <form method="POST" action="{{ url_for('delete_user') }}">
+        <input type="hidden" name="hwid" value="{{ user.hwid }}">
+        <div class="form-group">
+          <label for="confirm_username">Enter your username to confirm:</label>
+          <input type="text" class="form-control" id="confirm_username" name="confirm_username" required>
+        </div>
+        <button type="submit" class="btn btn-danger">Delete User</button>
+      </form>
+      <br>
+      <a href="{{ url_for('users') }}">Back to User List</a>
+    </div>
+  </body>
+</html>
