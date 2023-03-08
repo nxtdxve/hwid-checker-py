@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 import pymongo
+import pymongo.helpers
 from datetime import datetime, timedelta
 import string
 import random
@@ -73,9 +74,11 @@ def generate_keys():
             keys_collection.insert_one(key_doc)
             keys.append(key)
 
-        return render_template('generate_keys.html', keys=keys)
+        return redirect(url_for('keys'))
 
+    # If the request method is GET, show the generate_keys.html page
     return render_template('generate_keys.html')
+
 
 
 def generate_key():
@@ -109,8 +112,8 @@ def users():
     db = client[DB_NAME]
     users_collection = db['users']
     users = list(users_collection.find())
-
     return render_template('users.html', users=users)
+
 
 
 @app.route('/delete_key', methods=['POST'])
@@ -121,7 +124,7 @@ def delete_key():
     key = request.form['key']
     keys_collection.delete_one({"key": key})
 
-    return redirect(url_for('users'))
+    return redirect(url_for('keys'))
 
 
 @app.route('/disable_user', methods=['POST'])
@@ -182,13 +185,39 @@ def edit_user():
         return jsonify({'success': True, 'message': 'User edited successfully'})
     else:
         return jsonify({'success': False, 'message': 'User was not edited'})
+    
 
+@app.route('/latest_login')
+def latest_login():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    db = client[DB_NAME]
+    users_collection = db['users']
+    latest_user = users_collection.find_one(sort=[('last_login', pymongo.DESCENDING)])
+    if latest_user:
+        return {'username': latest_user['username'], 'last_login': latest_user['last_login']}
+    else:
+        return {'username': 'No users found', 'last_login': ''}
+    
+
+@app.route('/user/<username>')
+def user(username):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    db = client[DB_NAME]
+    users_collection = db['users']
+    user = users_collection.find_one({'username': username})
+    if user:
+        return render_template('user.html', user=user)
+    else:
+        return 'User not found'
 
 
 @app.template_filter()
-def format_datetime(value, format='%Y-%m-%d %H:%M:%S'):
+def format_datetime(value, format='%m/%d/%Y, %I:%M:%S %p'):
     timestamp = value.timestamp()
     return datetime.utcfromtimestamp(timestamp).strftime(format)
+
 
 
 if __name__ == '__main__':
