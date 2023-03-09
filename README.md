@@ -8,10 +8,10 @@ The admin panel, on the other hand, is used by software companies to manage thei
 
 ## **Table of Contents**
 
-- **[Installation](https://github.com/nxtdxve/hwid-checker-py/edit/master/README.md#installation)**
-- **[Usage](https://github.com/nxtdxve/hwid-checker-py/edit/master/README.md#usage)**
-- **[Contributing](https://github.com/nxtdxve/hwid-checker-py/edit/master/README.md#contributing)**
-- **[License](https://github.com/nxtdxve/hwid-checker-py/edit/master/README.md#license)**
+- **[Installation](https://github.com/nxtdxve/hwid-checker-py#installation)**
+- **[Usage](https://github.com/nxtdxve/hwid-checker-py#usage)**
+- **[Contributing](https://github.com/nxtdxve/hwid-checker-py#contributing)**
+- **[License](https://github.com/nxtdxve/hwid-checker-py#license)**
 
 ## **Installation**
 
