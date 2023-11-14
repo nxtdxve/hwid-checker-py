@@ -3,4 +3,4 @@ pymongo==4.3.3
 requests==2.31.0
 WMI==1.5.1
 python-dotenv==0.21.0
-flask==2.2.2
+flask==2.2.5
